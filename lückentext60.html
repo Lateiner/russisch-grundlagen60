@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktive Übung: Instrumental-Endungen</title>
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        /* Verbot von Kursivschrift */
+        * {
+            font-style: normal !important;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .intro-section {
+            background: #eef2f7;
+            padding: 20px;
+            border-left: 8px solid var(--secondary-color);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .rule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            font-size: 0.95rem;
+        }
+
+        .rule-table td, .rule-table th {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: left;
+        }
+
+        .exercise-card {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .exercise-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .sentence {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .gap {
+            display: inline-block;
+            min-width: 60px;
+            padding: 2px 10px;
+            border-bottom: 2px solid var(--secondary-color);
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .gap.correct { color: var(--success-color); border-bottom-color: var(--success-color); }
+        .gap.incorrect { color: var(--error-color); border-bottom-color: var(--error-color); }
+
+        .options-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .opt-btn {
+            padding: 8px 15px;
+            border: 2px solid var(--secondary-color);
+            background: white;
+            color: var(--secondary-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { background: var(--secondary-color); color: white; }
+        
+        .opt-btn.btn-correct {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+
+        .opt-btn.btn-incorrect {
+            background-color: var(--error-color) !important;
+            border-color: var(--error-color) !important;
+            color: white !important;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-ctrl {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .btn-reset { background-color: #7f8c8d; }
+        .btn-sol { background-color: var(--success-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .sentence { font-size: 1.1rem; }
+            .control-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sprachassistent Russisch</h1>
+    <h2>Adjektive im Творительный падеж (Fall 5)</h2>
+
+    <div class="intro-section">
+        <h3>Grammatik-Hinweis: Endungs-Wahl</h3>
+        <table class="rule-table">
+            <thead>
+                <tr>
+                    <th>Geschlecht</th>
+                    <th>Standard</th>
+                    <th>Nach к, г, х / ж, ш, ч, щ / weichem н</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Männlich / Sächlich</td>
+                    <td><strong>-ым</strong></td>
+                    <td><strong>-им</strong></td>
+                </tr>
+                <tr>
+                    <td>Weiblich</td>
+                    <td><strong>-ой</strong></td>
+                    <td><strong>-ей</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Wähle die richtige Endung für die Lücke aus.</p>
+    </div>
+
+    <div id="exercise-container"></div>
+</div>
+
+<script>
+    const taskData = [
+        { id: 1, text: "Я пишу син", rest: " карандашом.", opts: ["им", "ым"], correct: "им" },
+        { id: 2, text: "Она довольна нов", rest: " работой.", opts: ["ой", "ей"], correct: "ой" },
+        { id: 3, text: "Мы любуемся русск", rest: " лесом.", opts: ["им", "ым"], correct: "им" },
+        { id: 4, text: "Он гуляет mit маленьк", rest: " сыном.", opts: ["им", "ым"], correct: "им" },
+        { id: 5, text: "Я интересуюсь современн", rest: " искусством.", opts: ["ым", "им"], correct: "ым" },
+        { id: 6, text: "Перед больш", rest: " окном стоит стол.", opts: ["им", "ым"], correct: "им" },
+        { id: 7, text: "Она пьёт чай с горяч", rest: " молоком.", opts: ["им", "ым"], correct: "им" },
+        { id: 8, text: "Мы живём под стар", rest: " мостом.", opts: ["ым", "им"], correct: "ым" },
+        { id: 9, type: "fem", text: "Я встретился с хорош", rest: " подругой.", opts: ["ей", "ой"], correct: "ей" },
+        { id: 10, text: "Он работает главн", rest: " врачом.", opts: ["ым", "им"], correct: "ым" },
+        { id: 11, text: "Над син", rest: " морем летит птица.", opts: ["им", "ым"], correct: "им" },
+        { id: 12, text: "Мы гордимся родн", rest: " городом.", opts: ["ым", "им"], correct: "ым" },
+        { id: 13, text: "Перед высок", rest: " зданием есть парк.", opts: ["им", "ым"], correct: "им" },
+        { id: 14, text: "Я знаком с тво", rest: " женой.", opts: ["ей", "ой"], correct: "ей" },
+        { id: 15, text: "С кажд", rest: " днём погода лучше.", opts: ["ым", "им"], correct: "ым" },
+        { id: 16, text: "Между стар", rest: " и нов", rest2: " домами.", opts: ["ым", "им"], correct: "ым" },
+        { id: 17, text: "Она любуется красн", rest: " розой.", opts: ["ой", "ей"], correct: "ой" },
+        { id: 18, text: "Мы восхищаемся древн", rest: " искусством.", opts: ["им", "ым"], correct: "им" },
+        { id: 19, text: "С лучш", rest: " другом всегда весело.", opts: ["им", "ым"], correct: "им" },
+        { id: 20, text: "За соседн", rest: " столом сидят люди.", opts: ["им", "ым"], correct: "им" }
+    ];
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function renderTasks() {
+        const container = document.getElementById('exercise-container');
+        container.innerHTML = '';
+
+        taskData.forEach((task, index) => {
+            const card = document.createElement('div');
+            card.className = 'exercise-card';
+            
+            const shuffledOpts = shuffle([...task.opts]);
+            
+            card.innerHTML = `
+                <span class="exercise-title">Aufgabe ${index + 1}</span>
+                <div class="sentence">
+                    <span>${task.text}</span>
+                    <span class="gap" id="gap-${task.id}">__</span>
+                    <span>${task.rest}</span>
+                </div>
+                <div class="options-row" id="opts-${task.id}">
+                    ${shuffledOpts.map(opt => `
+                        <button class="opt-btn" onclick="checkAnswer(${task.id}, '${opt}', '${task.correct}')">${opt}</button>
+                    `).join('')}
+                </div>
+                <div class="control-buttons">
+                    <button class="btn-ctrl btn-reset" onclick="resetTask(${index})">Zurücksetzen und mischen</button>
+                    <button class="btn-ctrl btn-sol" onclick="showSolution(${task.id}, '${task.correct}')">Lösung anzeigen</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    window.checkAnswer = (taskId, selected, correct) => {
+        const gap = document.getElementById(`gap-${taskId}`);
+        const buttons = document.querySelectorAll(`#opts-${taskId} .opt-btn`);
+        
+        gap.innerText = selected;
+        
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-correct', 'btn-incorrect');
+            if (btn.innerText === selected) {
+                if (selected === correct) {
+                    btn.classList.add('btn-correct');
+                    gap.className = 'gap correct';
+                } else {
+                    btn.classList.add('btn-incorrect');
+                    gap.className = 'gap incorrect';
+                }
+            }
+        });
+    };
+
+    window.resetTask = (index) => {
+        renderTasks(); // Einfach alles neu mischen
+    };
+
+    window.showSolution = (taskId, correct) => {
+        const gap = document.getElementById(`gap-${taskId}`);
+        const buttons = document.querySelectorAll(`#opts-${taskId} .opt-btn`);
+        
+        gap.innerText = correct;
+        gap.className = 'gap correct';
+        
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-correct', 'btn-incorrect');
+            if (btn.innerText === correct) {
+                btn.classList.add('btn-correct');
+            }
+        });
+    };
+
+    renderTasks();
+</script>
+
+</body>
+</html>
