@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russische Grammatik: Adjektive im Instrumental</title>
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        /* Verbot von Kursivschrift im gesamten Dokument */
+        * {
+            font-style: normal !important;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .intro-section {
+            background: #eef2f7;
+            padding: 25px;
+            border-left: 8px solid var(--secondary-color);
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .rule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        .rule-table td, .rule-table th {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+
+        .exercise-card {
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            background: #fff;
+            position: relative;
+        }
+
+        .exercise-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 12px;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #7f8c8d; color: white; }
+        .btn-solution { background-color: var(--success-color); color: white; }
+        button:active { transform: scale(0.98); }
+        button:hover { opacity: 0.9; }
+
+        select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            font-size: 1rem;
+            outline: none;
+            width: 200px;
+        }
+
+        /* Feedback-Farben für Dropdown und Drag-Span */
+        .correct {
+            border-color: var(--success-color) !important;
+            background-color: #d4edda !important;
+            color: #155724 !important;
+        }
+
+        .incorrect {
+            border-color: var(--error-color) !important;
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        /* Spezifisches Feedback für Radio-Buttons (nur das Wort/Label) */
+        .radio-option {
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            transition: background 0.3s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .radio-option.correct-label {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid var(--success-color);
+        }
+
+        .radio-option.incorrect-label {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid var(--error-color);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .drag-area {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .drag-item {
+            padding: 8px 20px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 6px;
+            cursor: move;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .drop-zone {
+            display: inline-block;
+            min-width: 100px;
+            height: 35px;
+            border-bottom: 2px dashed var(--secondary-color);
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+            padding: 2px 10px;
+            margin: 0 5px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .button-group { flex-direction: column; }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sprachassistent Russisch</h1>
+    <h2>Adjektive im Творительный падеж (Instrumental)</h2>
+
+    <div class="intro-section">
+        <h3>Grammatik-Übersicht</h3>
+        <p>Der Instrumental (Fall 5) wird nach Präpositionen wie <strong>с</strong> (mit), <strong>между</strong> (zwischen), <strong>над</strong> (über), <strong>перед</strong> (vor) genutzt.</p>
+        
+        <table class="rule-table">
+            <thead>
+                <tr>
+                    <th>Geschlecht</th>
+                    <th>Harter Stamm</th>
+                    <th>к, г, х / ж, ш, ч, щ / weiches н</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Männlich / Sächlich</td>
+                    <td><strong>-ым</strong></td>
+                    <td><strong>-им</strong></td>
+                </tr>
+                <tr>
+                    <td>Weiblich</td>
+                    <td><strong>-ой</strong></td>
+                    <td><strong>-ей</strong> (unbetont / weich)</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>Beispiel: „Я интересуюсь новым проектом“ (Ich interessiere mich für das neue Projekt).</p>
+    </div>
+
+    <div id="exercise-list">
+        <!-- Inhalte werden per JS generiert -->
+    </div>
+</div>
+
+<script>
+    // Hilfsfunktion zum Mischen
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    const tasks = [
+        // Dropdown Tasks 1-10
+        { id: 1, type: 'dropdown', sentence: "Я пишу (красный) карандашом.", options: ["красным", "красним", "красной"], correct: "красным" },
+        { id: 2, type: 'dropdown', sentence: "Она довольна (новая) работой.", options: ["новой", "новым", "новое"], correct: "новой" },
+        { id: 3, type: 'dropdown', sentence: "Мы любуемся (русский) лесом.", options: ["русским", "русскым", "русской"], correct: "русским" },
+        { id: 4, type: 'dropdown', sentence: "Он гуляет с (маленькая) дочерью.", options: ["маленькой", "маленьким", "маленькую"], correct: "маленькой" },
+        { id: 5, type: 'dropdown', sentence: "Я интересуюсь (древнее) искусство.", options: ["древним", "древным", "древней"], correct: "древним" },
+        { id: 6, type: 'dropdown', sentence: "Саша пьёт кофе mit (горячее) молоком.", options: ["горячим", "горячым", "горячей"], correct: "горячим" },
+        { id: 7, type: 'dropdown', sentence: "Перед (старый) зданием есть парк.", options: ["старым", "старим", "старой"], correct: "старым" },
+        { id: 8, type: 'dropdown', sentence: "Мы встретились с (чужой) мужем.", options: ["чужим", "чужым", "чужой"], correct: "чужим" },
+        { id: 9, type: 'dropdown', sentence: "Книга лежит под (синее) креслом.", options: ["синим", "синым", "синей"], correct: "синим" },
+        { id: 10, type: 'dropdown', sentence: "Он управляет (большая) компанией.", options: ["большой", "большей", "большим"], correct: "большой" },
+
+        // Radio Tasks 11-15
+        { id: 11, type: 'radio', question: "Vervollständige: „Я горжусь ... сыном“.", options: ["умным", "умной", "умную"], correct: "умным" },
+        { id: 12, type: 'radio', question: "Was ist richtig? „Он пьёт чай с ... лимоном“.", options: ["кислым", "кислой", "кислую"], correct: "кислым" },
+        { id: 13, type: 'radio', question: "Vervollständige: „Мы говорим с ... учительницей“.", options: ["хорошей", "хорошим", "хорошую"], correct: "хорошей" },
+        { id: 14, type: 'radio', question: "Was passt? „Над ... полем летит птица“.", options: ["зелёным", "зелёним", "зелёной"], correct: "зелёным" },
+        { id: 15, type: 'radio', question: "Vervollständige: „Я знаком с ... девушкой“.", options: ["твоей", "твоим", "твою"], correct: "твоей" },
+
+        // Drag Tasks 16-20
+        { id: 16, type: 'drag', text: "с син__ платьем", options: ["им", "ым"], correct: "им" },
+        { id: 17, type: 'drag', text: "с лучш__ другом", options: ["им", "ым"], correct: "им" },
+        { id: 18, type: 'drag', text: "над больш__ окном", options: ["им", "ым"], correct: "им" },
+        { id: 19, type: 'drag', text: "с хорош__ новостью", options: ["ей", "ой"], correct: "ей" },
+        { id: 20, type: 'drag', text: "перед высoк__ мужчиной", options: ["им", "ым"], correct: "им" }
+    ];
+
+    function renderTasks() {
+        const list = document.getElementById('exercise-list');
+        list.innerHTML = '';
+        
+        tasks.forEach((task, index) => {
+            const card = document.createElement('div');
+            card.className = 'exercise-card';
+            card.id = `card-${task.id}`;
+            
+            let content = `<span class="exercise-title">Aufgabe ${task.id}</span>`;
+            
+            if (task.type === 'dropdown') {
+                const shuffledOpts = shuffle([...task.options]);
+                content += `<p>${task.sentence}</p>
+                    <select id="input-${task.id}" onchange="checkDropdown(${task.id}, '${task.correct}')">
+                        <option value="">-- Wählen --</option>
+                        ${shuffledOpts.map(o => `<option value="${o}">${o}</option>`).join('')}
+                    </select>`;
+            } 
+            else if (task.type === 'radio') {
+                const shuffledOpts = shuffle([...task.options]);
+                content += `<p>${task.question}</p><div class="radio-group" id="group-${task.id}">
+                    ${shuffledOpts.map(o => `
+                        <label class="radio-option" id="label-${task.id}-${o}">
+                            <input type="radio" name="radio-${task.id}" value="${o}" onchange="checkRadio(${task.id}, '${o}', '${task.correct}')"> ${o}
+                        </label>`).join('')}
+                </div>`;
+            } 
+            else if (task.type === 'drag') {
+                const shuffledOpts = shuffle([...task.options]);
+                content += `
+                    <div class="drag-area" id="drags-${task.id}">
+                        ${shuffledOpts.map(o => `<div class="drag-item" draggable="true" ondragstart="onDragStart(event)">${o}</div>`).join('')}
+                    </div>
+                    <p>${task.text.replace('__', `<span class="drop-zone" id="drop-${task.id}" ondragover="onDragOver(event)" ondrop="onDrop(event, ${task.id}, '${task.correct}')"></span>`)}</p>`;
+            }
+
+            content += `
+                <div class="button-group">
+                    <button class="btn-reset" onclick="resetTask(${index})">Zurücksetzen und mischen</button>
+                    <button class="btn-solution" onclick="showSolution(${index})">Lösung anzeigen</button>
+                </div>`;
+            
+            card.innerHTML = content;
+            list.appendChild(card);
+        });
+    }
+
+    // --- LOGIK ---
+
+    window.checkDropdown = (id, correct) => {
+        const el = document.getElementById(`input-${id}`);
+        el.className = el.value === correct ? 'correct' : 'incorrect';
+    };
+
+    window.checkRadio = (id, selected, correct) => {
+        // Zuerst alle Labels zurücksetzen
+        const task = tasks.find(t => t.id === id);
+        task.options.forEach(o => {
+            document.getElementById(`label-${id}-${o}`).className = 'radio-option';
+        });
+        // Aktuelles Label färben
+        const label = document.getElementById(`label-${id}-${selected}`);
+        label.className = selected === correct ? 'radio-option correct-label' : 'radio-option incorrect-label';
+    };
+
+    let draggedText = "";
+    window.onDragStart = (e) => { draggedText = e.target.innerText; };
+    window.onDragOver = (e) => { e.preventDefault(); };
+    window.onDrop = (e, id, correct) => {
+        e.preventDefault();
+        const zone = document.getElementById(`drop-${id}`);
+        zone.innerText = draggedText;
+        zone.className = draggedText === correct ? 'drop-zone correct' : 'drop-zone incorrect';
+    };
+
+    window.resetTask = (index) => {
+        renderTasks(); // Einfach alles neu rendern mischt die Optionen neu
+    };
+
+    window.showSolution = (index) => {
+        const task = tasks[index];
+        if (task.type === 'dropdown') {
+            const el = document.getElementById(`input-${task.id}`);
+            el.value = task.correct;
+            el.className = 'correct';
+        } else if (task.type === 'radio') {
+            task.options.forEach(o => {
+                document.getElementById(`label-${task.id}-${o}`).className = 'radio-option';
+            });
+            const radio = document.querySelector(`input[name="radio-${task.id}"][value="${task.correct}"]`);
+            radio.checked = true;
+            document.getElementById(`label-${task.id}-${task.correct}`).className = 'radio-option correct-label';
+        } else if (task.type === 'drag') {
+            const zone = document.getElementById(`drop-${task.id}`);
+            zone.innerText = task.correct;
+            zone.className = 'drop-zone correct';
+        }
+    };
+
+    // Initialer Start
+    renderTasks();
+</script>
+
+</body>
+</html>
