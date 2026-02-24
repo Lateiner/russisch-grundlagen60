@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hörübung: Instrumental-Sätze</title>
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        /* Verbot von Kursivschrift im gesamten Dokument */
+        * {
+            font-style: normal !important;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .intro-section {
+            background: #eef2f7;
+            padding: 20px;
+            border-left: 8px solid var(--secondary-color);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .exercise-card {
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            margin-bottom: 35px;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .audio-box {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .play-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .play-btn:hover { background-color: #2980b9; }
+        .play-btn:active { transform: scale(0.97); }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .options-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .opt-btn {
+            padding: 12px;
+            background-color: #f8f9fa;
+            border: 2px solid var(--border-color);
+            color: var(--primary-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { border-color: var(--secondary-color); background-color: #eaf4fc; }
+
+        .opt-btn.correct {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+
+        .opt-btn.incorrect {
+            background-color: var(--error-color) !important;
+            border-color: var(--error-color) !important;
+            color: white !important;
+        }
+
+        /* Lösung-Bereich */
+        .card-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .btn-show-sol {
+            background: none;
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .btn-show-sol:hover { background-color: #f0fff4; }
+
+        .solution-display {
+            display: none;
+            background-color: #f0fff4;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            border: 1px solid var(--success-color);
+        }
+
+        .global-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn-ctrl {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        .btn-reset { background-color: #7f8c8d; }
+        
+        @media (max-width: 500px) {
+            .container { padding: 15px; }
+            .btn-ctrl { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sprachassistent Russisch</h1>
+    <h2>Hörverständnis: Adjektive im Instrumental</h2>
+
+    <div class="intro-section">
+        <p>Höre dir den Satz mit der <strong>Männerstimme</strong> an. Wähle die korrekte Form, die du gehört hast. Klicke bei Bedarf auf „Lösung“, um den ganzen Satz zu lesen.</p>
+    </div>
+
+    <div id="exercise-list">
+        <!-- JS generiert Karten -->
+    </div>
+
+    <div class="global-controls">
+        <button class="btn-ctrl btn-reset" onclick="initGame()">Alle Aufgaben neu mischen</button>
+    </div>
+</div>
+
+<script>
+    const taskData = [
+        { id: 1, sentence: "Я интересуюсь русским языком.", opts: ["русским языком", "русскым языком", "русской языком"], correct: "русским языком" },
+        { id: 2, sentence: "Он доволен новой работой.", opts: ["новым работой", "новой работой", "новое работой"], correct: "новой работой" },
+        { id: 3, sentence: "Мы восхищаемся древним искусством.", opts: ["древним искусством", "древным искусством", "древней искусством"], correct: "древним искусством" },
+        { id: 4, sentence: "Она пьёт чай с горячим молоком.", opts: ["горячим молоком", "горячем молоком", "горячей молоком"], correct: "горячим молоком" },
+        { id: 5, sentence: "Перед высоким зданием есть парк.", opts: ["высоким зданием", "высоком зданием", "высокой зданием"], correct: "высоким зданием" },
+        { id: 6, sentence: "Я пишу чёрным карандашом.", opts: ["чёрным карандашом", "чёрним карандашом", "чёрную карандашом"], correct: "чёрным карандашом" },
+        { id: 7, sentence: "Мы любуемся синим морем.", opts: ["синим морем", "синым морем", "синей морем"], correct: "синим морем" },
+        { id: 8, sentence: "Она разговаривает с лучшей подругой.", opts: ["лучшей подругой", "лучшим подругой", "лучшую подругу"], correct: "лучшей подругой" },
+        { id: 9, sentence: "Кот спиat под старым мостом.", opts: ["старым мостом", "старим мостом", "старом мостом"], correct: "старым мостом" },
+        { id: 10, sentence: "Он управляет большой компанией.", opts: ["большой компанией", "большим компанией", "большую компанию"], correct: "большой компанией" }
+    ];
+
+    let maleVoice = null;
+
+    function loadVoices() {
+        const voices = window.speechSynthesis.getVoices();
+        // Suche gezielt nach russischen Männerstimmen (Pavel, Maxim, etc.)
+        maleVoice = voices.find(v => v.lang.includes('ru') && 
+            (v.name.toLowerCase().includes('pavel') || v.name.toLowerCase().includes('maxim') || v.name.toLowerCase().includes('male'))) 
+            || voices.find(v => v.lang.includes('ru'));
+    }
+
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    function play(text) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        if (maleVoice) msg.voice = maleVoice;
+        msg.lang = 'ru-RU';
+        msg.rate = 0.85;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function shuffle(arr) {
+        return arr.sort(() => Math.random() - 0.5);
+    }
+
+    function initGame() {
+        const container = document.getElementById('exercise-list');
+        container.innerHTML = '';
+        const shuffledTasks = shuffle([...taskData]);
+
+        shuffledTasks.forEach((task, index) => {
+            const card = document.createElement('div');
+            card.className = 'exercise-card';
+            const shuffledOpts = shuffle([...task.opts]);
+
+            card.innerHTML = `
+                <div style="font-weight:bold; color:#7f8c8d; margin-bottom:10px;">Aufgabe ${index + 1}</div>
+                <div class="audio-box">
+                    <button class="play-btn" onclick="play('${task.sentence}')">🔊 Satz anhören</button>
+                </div>
+                <div class="options-grid" id="grid-${task.id}">
+                    ${shuffledOpts.map(o => `<button class="opt-btn" onclick="check(${task.id}, '${o}', '${task.correct}')">${o}</button>`).join('')}
+                </div>
+                <div class="card-footer">
+                    <button class="btn-show-sol" onclick="toggleSol(${task.id})">Lösung anzeigen</button>
+                    <div class="solution-display" id="sol-${task.id}">${task.sentence}</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    window.check = (id, selected, correct) => {
+        const btns = document.querySelectorAll(`#grid-${id} .opt-btn`);
+        btns.forEach(b => {
+            b.classList.remove('correct', 'incorrect');
+            if (b.innerText === selected) {
+                b.classList.add(selected === correct ? 'correct' : 'incorrect');
+            }
+        });
+    };
+
+    window.toggleSol = (id) => {
+        const display = document.getElementById(`sol-${id}`);
+        const isHidden = window.getComputedStyle(display).display === 'none';
+        display.style.display = isHidden ? 'block' : 'none';
+        
+        // Bei Anzeige der Lösung auch den richtigen Button grün markieren
+        if (isHidden) {
+            const task = taskData.find(t => t.id === id);
+            const btns = document.querySelectorAll(`#grid-${id} .opt-btn`);
+            btns.forEach(b => {
+                if (b.innerText === task.correct) b.classList.add('correct');
+            });
+        }
+    };
+
+    window.onload = initGame;
+</script>
+
+</body>
+</html>
