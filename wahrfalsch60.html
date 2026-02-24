@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed-Quiz: Instrumental-Endungen</title>
+    <!-- Polyfill für Drag & Drop (hier für Touch-Kompatibilität der Buttons) -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        /* Verbot von Kursivschrift im gesamten Dokument */
+        * {
+            font-style: normal !important;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .intro-section {
+            background: #eef2f7;
+            padding: 20px;
+            border-left: 8px solid var(--secondary-color);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        /* Quiz-Bereich */
+        #quiz-area {
+            display: none;
+            text-align: center;
+        }
+
+        .timer-container {
+            width: 100%;
+            height: 12px;
+            background-color: #eee;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        #timer-bar {
+            width: 100%;
+            height: 100%;
+            background-color: var(--secondary-color);
+            transition: width 0.1s linear;
+        }
+
+        .phrase-display {
+            font-size: 2rem;
+            font-weight: bold;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            background-color: #fafafa;
+        }
+
+        .quiz-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-quiz {
+            padding: 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn-true { background-color: var(--success-color); }
+        .btn-false { background-color: var(--error-color); }
+        .btn-quiz:active { transform: scale(0.95); }
+
+        /* Ergebnis-Bereich */
+        #result-area {
+            display: none;
+        }
+
+        .score-board {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .review-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        .review-table th, .review-table td {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .review-row-correct { background-color: #d4edda; }
+        .review-row-incorrect { background-color: #f8d7da; }
+
+        .btn-ctrl {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 10px auto;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .btn-start { background-color: var(--secondary-color); }
+        .btn-reset { background-color: #7f8c8d; }
+
+        /* Feedback-Animation */
+        @keyframes flash-green {
+            from { background-color: #d4edda; }
+            to { background-color: #fafafa; }
+        }
+        @keyframes flash-red {
+            from { background-color: #f8d7da; }
+            to { background-color: #fafafa; }
+        }
+        .flash-success { animation: flash-green 0.5s; }
+        .flash-error { animation: flash-red 0.5s; }
+
+        @media (max-width: 600px) {
+            .phrase-display { font-size: 1.4rem; }
+            .btn-quiz { font-size: 1.1rem; padding: 15px; }
+            .review-table { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russisch Speed-Quiz</h1>
+    <h2>Wahr oder Falsch?</h2>
+
+    <!-- Start-Bildschirm -->
+    <div id="start-area">
+        <div class="intro-section">
+            <h3>Anleitung</h3>
+            <p>Es erscheinen Sätze mit Adjektiven im Instrumental. Entscheide schnell: Ist die Endung <strong>grammatikalisch korrekt</strong>?</p>
+            <ul>
+                <li>Du hast pro Satz <strong>5 Sekunden</strong> Zeit.</li>
+                <li>Drücke „Wahr“ für richtig, „Falsch“ für Fehler.</li>
+                <li>Am Ende siehst du die Auswertung und Erklärungen.</li>
+            </ul>
+        </div>
+        <button class="btn-ctrl btn-start" onclick="startQuiz()">Spiel starten</button>
+    </div>
+
+    <!-- Quiz-Bildschirm -->
+    <div id="quiz-area">
+        <div class="timer-container">
+            <div id="timer-bar"></div>
+        </div>
+        <div id="phrase-box" class="phrase-display">Lade...</div>
+        <div class="quiz-buttons">
+            <button class="btn-quiz btn-true" onclick="handleAnswer(true)">Wahr</button>
+            <button class="btn-quiz btn-false" onclick="handleAnswer(false)">Falsch</button>
+        </div>
+        <p style="margin-top: 20px;">Punkte: <span id="current-score">0</span></p>
+    </div>
+
+    <!-- Ergebnis-Bildschirm -->
+    <div id="result-area">
+        <div class="score-board" id="final-score"></div>
+        <h3>Deine Übersicht:</h3>
+        <div style="overflow-x: auto;">
+            <table class="review-table" id="review-table">
+                <thead>
+                    <tr>
+                        <th>Satz</th>
+                        <th>Status</th>
+                        <th>Regel / Lösung</th>
+                    </tr>
+                </thead>
+                <tbody id="review-body"></tbody>
+            </table>
+        </div>
+        <button class="btn-ctrl btn-start" onclick="startQuiz()">Nochmal spielen</button>
+        <button class="btn-ctrl btn-reset" onclick="location.reload()">Hauptmenü</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        { s: "с новым другом", isCorrect: true, info: "Standard-Endung -ым." },
+        { s: "с хорошым учителем", isCorrect: false, info: "Nach Schischlauten (ш) immer и -> хорошим." },
+        { s: "с большoй собакой", isCorrect: true, info: "Standard-Endung weiblich -ой." },
+        { s: "с русскым языком", isCorrect: false, info: "Nach к, г, х immer и -> русским." },
+        { s: "под старым мостом", isCorrect: true, info: "Standard-Endung -ым." },
+        { s: "с синим платьем", isCorrect: true, info: "Weicher Stamm -> -им." },
+        { s: "над яркым солнцем", isCorrect: false, info: "Nach к immer и -> ярким." },
+        { s: "с лучшей подругой", isCorrect: true, info: "Schischlaut unbetont -> -ей." },
+        { s: "с чужым мужем", isCorrect: false, info: "Nach ж immer и -> чужим." },
+        { s: "перед высоким зданием", isCorrect: true, info: "Nach к steht korrekt и." },
+        { s: "с горячем молоком", isCorrect: false, info: "Nach Schischlauten (ч) hier и -> горячим." },
+        { s: "за большой дверью", isCorrect: true, info: "Standard-Endung weiblich -ой." },
+        { s: "с маленькым сыном", isCorrect: false, info: "Nach к immer и -> маленьким." },
+        { s: "над синим морем", isCorrect: true, info: "Weicher Stamm -> -им." },
+        { s: "с летней погодой", isCorrect: true, info: "Weicher Stamm (летняя) -> -ей." },
+        { s: "с интересным проектом", isCorrect: true, info: "Standard-Endung -ым." },
+        { s: "под низкым столом", isCorrect: false, info: "Nach к immer и -> низким." },
+        { s: "с рыжим котом", isCorrect: true, info: "Nach ж steht korrekt и." },
+        { s: "перед старом домом", isCorrect: false, info: "Standard-Endung ist -ым -> старым." },
+        { s: "с долгой историей", isCorrect: true, info: "Nach г steht korrekt и." }
+    ];
+
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let timer;
+    let timeLeft;
+    let userResults = [];
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function startQuiz() {
+        document.getElementById('start-area').style.display = 'none';
+        document.getElementById('result-area').style.display = 'none';
+        document.getElementById('quiz-area').style.display = 'block';
+        
+        score = 0;
+        currentIndex = 0;
+        userResults = [];
+        document.getElementById('current-score').innerText = score;
+        
+        // Zufällige 10 Fragen auswählen
+        currentQuestions = shuffle([...quizData]).slice(0, 10);
+        showQuestion();
+    }
+
+    function showQuestion() {
+        if (currentIndex >= currentQuestions.length) {
+            endQuiz();
+            return;
+        }
+
+        const q = currentQuestions[currentIndex];
+        const box = document.getElementById('phrase-box');
+        box.innerText = q.s;
+        box.className = 'phrase-display';
+        
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timeLeft = 100; // Prozent
+        const bar = document.getElementById('timer-bar');
+        
+        timer = setInterval(() => {
+            timeLeft -= 2; // Sinkt in ca. 5 Sekunden auf 0
+            bar.style.width = timeLeft + "%";
+            
+            if (timeLeft <= 0) {
+                handleAnswer(null); // Zeit abgelaufen
+            }
+        }, 100);
+    }
+
+    function handleAnswer(ans) {
+        clearInterval(timer);
+        const q = currentQuestions[currentIndex];
+        const box = document.getElementById('phrase-box');
+        
+        const isCorrect = (ans === q.isCorrect);
+        
+        if (isCorrect) {
+            score++;
+            document.getElementById('current-score').innerText = score;
+            box.classList.add('flash-success');
+        } else {
+            box.classList.add('flash-error');
+        }
+
+        userResults.push({
+            sentence: q.s,
+            correct: q.isCorrect,
+            user: ans,
+            info: q.info,
+            success: isCorrect
+        });
+
+        currentIndex++;
+        setTimeout(showQuestion, 600);
+    }
+
+    function endQuiz() {
+        document.getElementById('quiz-area').style.display = 'none';
+        document.getElementById('result-area').style.display = 'block';
+        document.getElementById('final-score').innerText = `Ergebnis: ${score} von 10 Punkten`;
+
+        const tbody = document.getElementById('review-body');
+        tbody.innerHTML = '';
+
+        userResults.forEach(res => {
+            const row = document.createElement('tr');
+            row.className = res.success ? 'review-row-correct' : 'review-row-incorrect';
+            
+            let statusText = res.success ? "✓" : "✗";
+            if (res.user === null) statusText = "⏰ Zeit um";
+
+            row.innerHTML = `
+                <td>${res.sentence}</td>
+                <td>${statusText}</td>
+                <td>${res.info}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+</script>
+
+</body>
+</html>
