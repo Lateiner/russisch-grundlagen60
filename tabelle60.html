@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix-Übung: Adjektiv-Deklination im Instrumental</title>
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        /* Verbot von Kursivschrift im gesamten Dokument */
+        * {
+            font-style: normal !important;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .intro-section {
+            background: #eef2f7;
+            padding: 20px;
+            border-left: 8px solid var(--secondary-color);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        /* Responsive Tabellen-Container */
+        .table-scroll {
+            overflow-x: auto;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 600px; /* Verhindert zu starkes Quetschen */
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .nom-cell {
+            background-color: #fcfcfc;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        /* Interaktive Elemente in der Zelle */
+        .cell-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gap-display {
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-height: 1.5em;
+            border-bottom: 2px solid var(--secondary-color);
+            min-width: 80px;
+            padding: 0 5px;
+        }
+
+        .gap-display.correct {
+            color: var(--success-color);
+            border-bottom-color: var(--success-color);
+        }
+
+        .gap-display.incorrect {
+            color: var(--error-color);
+            border-bottom-color: var(--error-color);
+        }
+
+        .option-btns {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .opt-btn {
+            padding: 4px 8px;
+            border: 1px solid var(--secondary-color);
+            background: white;
+            color: var(--secondary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .opt-btn.active-correct {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+
+        .opt-btn.active-incorrect {
+            background-color: var(--error-color) !important;
+            border-color: var(--error-color) !important;
+            color: white !important;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-ctrl {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #7f8c8d; }
+        .btn-sol { background-color: var(--success-color); }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            th, td { padding: 10px; font-size: 0.9rem; }
+            .btn-ctrl { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sprachassistent Russisch</h1>
+    <h2>Matrix: Adjektive im Instrumental</h2>
+
+    <div class="intro-section">
+        <h3>Anleitung</h3>
+        <p>Vervollständige die Tabelle, indem du die richtige Instrumental-Endung für jedes Geschlecht auswählst. Achte auf die Stamm-Endung des Adjektivs im Nominativ.</p>
+        <p>Feedback: <strong>Grün</strong> = Richtig, <strong>Rot</strong> = Falsch.</p>
+    </div>
+
+    <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Adjektiv (Nominativ)</th>
+                    <th>Maskulinum (он)</th>
+                    <th>Neutrum (оно)</th>
+                    <th>Femininum (она)</th>
+                </tr>
+            </thead>
+            <tbody id="matrix-body">
+                <!-- Zeilen werden per JS generiert -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="button-group">
+        <button class="btn-ctrl btn-reset" onclick="initMatrix()">Zurücksetzen und mischen</button>
+        <button class="btn-ctrl btn-sol" onclick="showAllSolutions()">Lösung anzeigen</button>
+    </div>
+</div>
+
+<script>
+    // Definition der Adjektive und ihrer korrekten Endungen
+    const adjectives = [
+        { 
+            nom: "новый (hart)", 
+            m_stem: "нов", m_corr: "ым", 
+            n_stem: "нов", n_corr: "ым", 
+            f_stem: "нов", f_corr: "ой",
+            options: ["ым", "им", "ой", "ей"]
+        },
+        { 
+            nom: "русский (к, г, х)", 
+            m_stem: "русск", m_corr: "им", 
+            n_stem: "русск", n_corr: "им", 
+            f_stem: "русск", f_corr: "ой",
+            options: ["ым", "им", "ой", "ей"]
+        },
+        { 
+            nom: "хороший (Schischlaut)", 
+            m_stem: "хорош", m_corr: "им", 
+            n_stem: "хорош", n_corr: "им", 
+            f_stem: "хорош", f_corr: "ей",
+            options: ["ым", "им", "ой", "ей"]
+        },
+        { 
+            nom: "чужой (Schischlaut betont)", 
+            m_stem: "чуж", m_corr: "им", 
+            n_stem: "чуж", n_corr: "им", 
+            f_stem: "чуж", f_corr: "ой",
+            options: ["ым", "им", "ой", "ей"]
+        },
+        { 
+            nom: "синий (weich)", 
+            m_stem: "син", m_corr: "им", 
+            n_stem: "син", n_corr: "им", 
+            f_stem: "син", f_corr: "ей",
+            options: ["ым", "им", "ой", "ей"]
+        }
+    ];
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function initMatrix() {
+        const tbody = document.getElementById('matrix-body');
+        tbody.innerHTML = '';
+        
+        // Mische die Reihenfolge der Adjektive
+        const shuffledAdjs = shuffle([...adjectives]);
+
+        shuffledAdjs.forEach((adj, rowIndex) => {
+            const tr = document.createElement('tr');
+            
+            // Nominativ Spalte
+            const tdNom = document.createElement('td');
+            tdNom.className = 'nom-cell';
+            tdNom.innerText = adj.nom;
+            tr.appendChild(tdNom);
+
+            // Spalten für M, N, F generieren
+            const types = [
+                { id: 'm', stem: adj.m_stem, corr: adj.m_corr },
+                { id: 'n', stem: adj.n_stem, corr: adj.n_corr },
+                { id: 'f', stem: adj.f_stem, corr: adj.f_corr }
+            ];
+
+            types.forEach(type => {
+                const td = document.createElement('td');
+                const cellId = `cell-${rowIndex}-${type.id}`;
+                
+                td.innerHTML = `
+                    <div class="cell-content">
+                        <div class="gap-display" id="gap-${cellId}">${type.stem}___</div>
+                        <div class="option-btns" id="btns-${cellId}">
+                            ${adj.options.map(opt => `
+                                <button class="opt-btn" onclick="checkCell('${cellId}', '${opt}', '${type.corr}', '${type.stem}')">${opt}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    window.checkCell = (cellId, selected, correct, stem) => {
+        const gap = document.getElementById(`gap-${cellId}`);
+        const btns = document.querySelectorAll(`#btns-${cellId} .opt-btn`);
+        
+        gap.innerText = stem + selected;
+        
+        btns.forEach(btn => {
+            btn.classList.remove('active-correct', 'active-incorrect');
+            if (btn.innerText === selected) {
+                if (selected === correct) {
+                    btn.classList.add('active-correct');
+                    gap.className = 'gap-display correct';
+                } else {
+                    btn.classList.add('active-incorrect');
+                    gap.className = 'gap-display incorrect';
+                }
+            }
+        });
+    };
+
+    window.showAllSolutions = () => {
+        // Wir müssen durch alle Zeilen der aktuell gerenderten Tabelle gehen
+        adjectives.forEach((adj, originalIdx) => {
+            // Da wir mischen, müssen wir die korrekten Daten basierend auf dem Text finden
+            const rows = document.querySelectorAll('#matrix-body tr');
+            rows.forEach(row => {
+                const nomText = row.querySelector('.nom-cell').innerText;
+                const match = adjectives.find(a => a.nom === nomText);
+                
+                if (match) {
+                    const columns = [
+                        { id: 'm', stem: match.m_stem, corr: match.m_corr },
+                        { id: 'n', stem: match.n_stem, corr: match.n_corr },
+                        { id: 'f', stem: match.f_stem, corr: match.f_corr }
+                    ];
+
+                    columns.forEach(col => {
+                        // Finde die richtige Zelle in dieser Reihe
+                        const cellContent = row.querySelectorAll('.cell-content');
+                        // M=0, N=1, F=2
+                        let cellIdx = (col.id === 'm') ? 0 : (col.id === 'n' ? 1 : 2);
+                        const targetCell = cellContent[cellIdx];
+                        
+                        const gap = targetCell.querySelector('.gap-display');
+                        gap.innerText = col.stem + col.corr;
+                        gap.className = 'gap-display correct';
+
+                        const btns = targetCell.querySelectorAll('.opt-btn');
+                        btns.forEach(btn => {
+                            btn.classList.remove('active-incorrect');
+                            if (btn.innerText === col.corr) {
+                                btn.classList.add('active-correct');
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    };
+
+    // Initialer Start
+    initMatrix();
+</script>
+
+</body>
+</html>
