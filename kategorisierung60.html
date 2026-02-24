@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sortierspiel: Instrumental-Endungen (Direktes Feedback)</title>
+    <!-- Polyfill für Drag & Drop auf Touch-Geräten -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --border-color: #dcdde1;
+        }
+
+        /* Verbot von Kursivschrift im gesamten Dokument */
+        * {
+            font-style: normal !important;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .intro-section {
+            background: #eef2f7;
+            padding: 20px;
+            border-left: 8px solid var(--secondary-color);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        /* Wort-Pool */
+        #word-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            background: #fff;
+            padding: 25px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            min-height: 120px;
+            margin-bottom: 30px;
+        }
+
+        /* Die Boxen-Struktur */
+        .drop-zones-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .box {
+            background: #fff;
+            border: 3px dashed var(--secondary-color);
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .box h4 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .box.drag-over {
+            background: #e1f5fe;
+            border-color: var(--primary-color);
+        }
+
+        /* Die Wort-Karten */
+        .draggable-word {
+            background: var(--secondary-color);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: move;
+            font-weight: bold;
+            user-select: none;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            text-align: center;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        /* Direktes Feedback Stile */
+        .draggable-word.correct {
+            background-color: var(--success-color) !important;
+        }
+
+        .draggable-word.incorrect {
+            background-color: var(--error-color) !important;
+        }
+
+        .button-group {
+            margin-top: 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .btn-reset { background-color: #7f8c8d; color: white; }
+        .btn-solution { background-color: var(--success-color); color: white; }
+
+        button:active { transform: scale(0.97); }
+
+        @media (max-width: 600px) {
+            .drop-zones-container { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sprachassistent Russisch</h1>
+    <h2>Sortierspiel: Instrumental-Endungen</h2>
+
+    <div class="intro-section">
+        <h3>Anleitung</h3>
+        <p>Ziehe die Wortpaare in den richtigen Korb. Das Feedback erfolgt <strong>sofort</strong> beim Ablegen:</p>
+        <ul>
+            <li><strong>Grün:</strong> Richtig einsortiert.</li>
+            <li><strong>Rot:</strong> Falscher Korb.</li>
+        </ul>
+        <p>Regel: Die Endung <strong>-им</strong> wird nach <strong>к, г, х, ж, ш, ч, щ</strong> und nach weichem <strong>н</strong> verwendet.</p>
+    </div>
+
+    <div class="game-area">
+        <!-- Startbereich der Wörter -->
+        <div id="word-pool" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+        <!-- Zielboxen -->
+        <div class="drop-zones-container">
+            <div class="box" id="box-ym" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h4>Endung -ым</h4>
+            </div>
+            <div class="box" id="box-im" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h4>Endung -им</h4>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-reset" onclick="initGame()">Zurücksetzen und mischen</button>
+            <button class="btn-solution" onclick="showSolution()">Lösung anzeigen</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const wordList = [
+        // Kategorie -ым (Harter Stamm)
+        { id: 1, text: "новым другом", cat: "box-ym" },
+        { id: 2, text: "интересным фильмом", cat: "box-ym" },
+        { id: 3, text: "старым зданием", cat: "box-ym" },
+        { id: 4, text: "трудным упражнением", cat: "box-ym" },
+        { id: 5, text: "красным карандашоm", cat: "box-ym" },
+        { id: 6, text: "умным студентом", cat: "box-ym" },
+        { id: 7, text: "честным человеком", cat: "box-ym" },
+        { id: 8, text: "быстрым поездом", cat: "box-ym" },
+        { id: 9, text: "красивым парком", cat: "box-ym" },
+        { id: 10, text: "важным делом", cat: "box-ym" },
+        
+        // Kategorie -им (к, г, х, Schischlaute, weiches н)
+        { id: 11, text: "русским языком", cat: "box-im" },
+        { id: 12, text: "большим окном", cat: "box-im" },
+        { id: 13, text: "хорошим учителем", cat: "box-im" },
+        { id: 14, text: "маленьким мальчиком", cat: "box-im" },
+        { id: 15, text: "дорогим подарком", cat: "box-im" },
+        { id: 16, text: "тихим вечером", cat: "box-im" },
+        { id: 17, text: "свежим хлебом", cat: "box-im" },
+        { id: 18, text: "чужим домом", cat: "box-im" },
+        { id: 19, text: "синим платьем", cat: "box-im" },
+        { id: 20, text: "летним днём", cat: "box-im" }
+    ];
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+        const targetBox = ev.target.closest('.box');
+        if (targetBox) {
+            targetBox.classList.add('drag-over');
+        }
+    }
+
+    // Drag-Over Effekt entfernen
+    document.addEventListener('dragleave', function(ev) {
+        const targetBox = ev.target.closest('.box');
+        if (targetBox) {
+            targetBox.classList.remove('drag-over');
+        }
+    });
+
+    function drag(ev) {
+        ev.dataTransfer.setData("textId", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        const targetBox = ev.target.closest('.box') || document.getElementById('word-pool');
+        const pool = document.getElementById('word-pool');
+        
+        // Highlight entfernen
+        if (targetBox !== pool) {
+            targetBox.classList.remove('drag-over');
+        }
+
+        const dataId = ev.dataTransfer.setData ? ev.dataTransfer.getData("textId") : ev.target.id;
+        const element = document.getElementById(dataId);
+        
+        if (!element) return;
+
+        targetBox.appendChild(element);
+
+        // DIREKTES FEEDBACK LOGIK
+        const correctCat = element.getAttribute('data-cat');
+        
+        if (targetBox === pool) {
+            // Zurück im Pool -> Neutral
+            element.classList.remove('correct', 'incorrect');
+        } else if (targetBox.id === correctCat) {
+            // Richtige Box
+            element.classList.add('correct');
+            element.classList.remove('incorrect');
+        } else {
+            // Falsche Box
+            element.classList.add('incorrect');
+            element.classList.remove('correct');
+        }
+    }
+
+    function shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
+    }
+
+    function initGame() {
+        const pool = document.getElementById('word-pool');
+        const boxYm = document.getElementById('box-ym');
+        const boxIm = document.getElementById('box-im');
+
+        // Boxen leeren (außer Header)
+        pool.innerHTML = '';
+        boxYm.innerHTML = '<h4>Endung -ым</h4>';
+        boxIm.innerHTML = '<h4>Endung -им</h4>';
+        
+        const shuffled = shuffle([...wordList]);
+        shuffled.forEach(word => {
+            const div = document.createElement('div');
+            div.className = 'draggable-word';
+            div.id = 'word-' + word.id;
+            div.draggable = true;
+            div.innerText = word.text;
+            div.setAttribute('data-cat', word.cat);
+            div.ondragstart = drag;
+            // Support für Klick-Drag auf manchen Systemen
+            div.onclick = function() { /* Optional für Accessibility */ };
+            pool.appendChild(div);
+        });
+    }
+
+    function showSolution() {
+        const allWords = document.querySelectorAll('.draggable-word');
+        const boxYm = document.getElementById('box-ym');
+        const boxIm = document.getElementById('box-im');
+
+        allWords.forEach(word => {
+            const cat = word.getAttribute('data-cat');
+            word.classList.remove('incorrect');
+            word.classList.add('correct');
+            
+            if (cat === 'box-ym') {
+                boxYm.appendChild(word);
+            } else {
+                boxIm.appendChild(word);
+            }
+        });
+    }
+
+    // Spielstart
+    window.onload = initGame;
+</script>
+
+</body>
+</html>
